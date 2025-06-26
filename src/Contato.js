@@ -17,8 +17,9 @@ import {
   FaUser,
   FaQuestionCircle,
 } from "react-icons/fa";
-
 import {} from "react-icons/fa";
+import emailjs from "@emailjs/browser";
+import Swal from "sweetalert2";
 
 function Contato() {
   const [formData, setFormData] = useState({ nome: "", email: "" });
@@ -30,7 +31,34 @@ function Contato() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert(`Nome: ${formData.nome}\nEmail: ${formData.email}`);
+
+    emailjs
+      .send(
+        "service_f8b7ori",
+        "template_tcmgcrj",
+        {
+          from_name: formData.nome,
+          from_email: formData.email,
+          message: formData.pergunta,
+        },
+        "nndNKQKKXGDZIndfc"
+      )
+      .then(() => {
+        Swal.fire({
+          icon: "success",
+          title: "Mensagem enviada!",
+          text: "Sua mensagem foi enviada com sucesso.",
+        });
+        setFormData({ nome: "", email: "", pergunta: "" });
+      })
+      .catch((error) => {
+        console.error("Erro ao enviar e-mail:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Erro ao enviar. Tente novamente.",
+        });
+      });
   };
 
   const topicos = [
