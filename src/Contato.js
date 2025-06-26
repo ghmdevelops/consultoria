@@ -22,43 +22,83 @@ import emailjs from "@emailjs/browser";
 import Swal from "sweetalert2";
 
 function Contato() {
-  const [formData, setFormData] = useState({ nome: "", email: "" });
+  const [formData, setFormData] = useState({
+    nome: "",
+    email: "",
+    pergunta: "",
+    captchaResposta: "",
+  });
   const [mostrarMais, setMostrarMais] = useState(false);
+  const [captcha, setCaptcha] = useState({ num1: 0, num2: 0, resultado: 0 });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const gerarCaptcha = () => {
+    const num1 = Math.floor(Math.random() * 10) + 1;
+    const num2 = Math.floor(Math.random() * 10) + 1;
+    setCaptcha({
+      num1,
+      num2,
+      resultado: num1 + num2,
+    });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    emailjs
-      .send(
-        "service_f8b7ori",
-        "template_tcmgcrj",
-        {
-          from_name: formData.nome,
-          from_email: formData.email,
-          message: formData.pergunta,
-        },
-        "nndNKQKKXGDZIndfc"
-      )
-      .then(() => {
-        Swal.fire({
-          icon: "success",
-          title: "Mensagem enviada!",
-          text: "Sua mensagem foi enviada com sucesso.",
-        });
-        setFormData({ nome: "", email: "", pergunta: "" });
-      })
-      .catch((error) => {
-        console.error("Erro ao enviar e-mail:", error);
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Erro ao enviar. Tente novamente.",
-        });
-      });
+    Swal.fire({
+      title: `🤖 Verificação Anti-Robô`,
+      text: `Quanto é ${captcha.num1} + ${captcha.num2}?`,
+      input: "text",
+      inputPlaceholder: "Digite a resposta",
+      showCancelButton: true,
+      confirmButtonText: "Verificar",
+      cancelButtonText: "Cancelar",
+      preConfirm: (inputValue) => {
+        if (parseInt(inputValue) !== captcha.resultado) {
+          Swal.showValidationMessage("Resposta incorreta!");
+        }
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        emailjs
+          .send(
+            "service_f8b7ori",
+            "template_tcmgcrj",
+            {
+              from_name: formData.nome,
+              from_email: formData.email,
+              message: formData.pergunta,
+            },
+            "nndNKQKKXGDZIndfc"
+          )
+          .then(() => {
+            Swal.fire({
+              icon: "success",
+              title: "Mensagem enviada com sucesso!",
+              timer: 2000,
+              showConfirmButton: false,
+            });
+            setFormData({
+              nome: "",
+              email: "",
+              pergunta: "",
+              captchaResposta: "",
+            });
+            gerarCaptcha(); // novo captcha
+          })
+          .catch((error) => {
+            Swal.fire({
+              icon: "error",
+              title: "Erro ao enviar",
+              text: "Tente novamente mais tarde.",
+            });
+            console.error("Erro:", error);
+          });
+      }
+    });
   };
 
   const topicos = [
@@ -262,26 +302,33 @@ function Contato() {
         <h2
           className="mb-4 text-center"
           style={{
-            background: "linear-gradient(90deg, #00ffc3, #a100ff)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            fontWeight: "800",
-            fontSize: "2.8rem",
-            fontFamily: "'Orbitron', sans-serif",
-            letterSpacing: "2px",
-            textShadow: "0 0 8px #00ffc3, 0 0 15px #a100ff",
+            fontSize: "2.5rem",
+            fontWeight: "700",
+            fontFamily: "'Segoe UI', 'Roboto', sans-serif",
+            color: "#ffffff",
+            letterSpacing: "1px",
+            textShadow: "0 1px 3px rgba(0,0,0,0.3)",
+            borderBottom: "2px solid #a100ff",
+            paddingBottom: "10px",
+            maxWidth: "700px",
+            margin: "0 auto",
           }}
         >
-          🚀 Consultoria em Automação FullStack
+          Consultoria Especializada em Automação FullStack
         </h2>
 
         <div className="row mb-4 align-items-center">
-          <div className="col-md-3 mb-4">
+          <div className="col-12 col-md-3 mb-4 d-flex justify-content-center justify-content-md-start">
             <img
               src="/logo980.jpeg"
               alt="Consultoria"
-              className="img-fluid rounded-4 shadow"
-              style={{ border: "2px solid #a100ff", width: "190px" }}
+              className="img-fluid rounded-circle shadow"
+              style={{
+                border: "2px solid #a100ff",
+                width: "290px",
+                height: "290px",
+                objectFit: "cover",
+              }}
             />
           </div>
 
@@ -291,9 +338,10 @@ function Contato() {
               <span style={{ color: "#00ffc3", fontWeight: "700" }}>
                 10 anos de experiência
               </span>{" "}
-              em automação, ensino como criar{" "}
+              em automação de testes, ensino tanto profissionais quanto empresas
+              a criarem{" "}
               <strong style={{ color: "#a100ff" }}>
-                frameworks modernos e escaláveis
+                frameworks modernos, escaláveis e robustos
               </strong>{" "}
               com as melhores práticas do mercado. Você vai dominar técnicas
               avançadas de{" "}
@@ -301,8 +349,15 @@ function Contato() {
                 Selenium + Java + TestNG + CI/CD
               </span>
               , desenvolvendo códigos limpos, reutilizáveis e integrando com
-              processos de integração contínua para entregar qualidade e
-              segurança em projetos reais.
+              processos de{" "}
+              <strong style={{ color: "#00ffc3" }}>integração contínua</strong>{" "}
+              para garantir alta qualidade e segurança em projetos reais. Também
+              auxilio empresas na{" "}
+              <span style={{ fontWeight: 600, color: "#00ffc3" }}>
+                estruturação de times de QA, otimização de frameworks e
+                treinamentos personalizados
+              </span>
+              .
             </p>
 
             {mostrarMais && (
@@ -352,8 +407,9 @@ function Contato() {
           </div>
         </div>
         <h4 className="text-center mb-4" style={{ color: "#a100ff" }}>
-          📬 Envie uma mensagem
+          📬 Profissional ou empresa? Envie sua mensagem agora
         </h4>
+
         <form onSubmit={handleSubmit} className="p-3 rounded shadow glass-box">
           <div className="mb-4">
             <label
@@ -409,6 +465,21 @@ function Contato() {
               style={{ boxShadow: "0 0 8px #a100ff" }}
             >
               <option value="">-- Escolha uma opção --</option>
+              <option value="Quero contratar serviços de consultoria para minha empresa">
+                Quero contratar serviços de consultoria para minha empresa
+              </option>
+              <option value="Preciso estruturar um time de QA com boas práticas">
+                Preciso estruturar um time de QA com boas práticas
+              </option>
+              <option value="Busco ajuda para implantar automação do zero na empresa">
+                Busco ajuda para implantar automação do zero na empresa
+              </option>
+              <option value="Quero revisar ou otimizar nosso framework atual">
+                Quero revisar ou otimizar nosso framework atual
+              </option>
+              <option value="Preciso de treinamento personalizado para minha equipe">
+                Preciso de treinamento personalizado para minha equipe
+              </option>
               <option value="Quero aprender do zero">
                 Quero aprender do zero
               </option>
@@ -429,6 +500,30 @@ function Contato() {
               </option>
               <option value="Gostaria de uma mentoria personalizada">
                 Gostaria de uma mentoria personalizada
+              </option>
+              <option value="Como estruturar um projeto de automação?">
+                Como estruturar um projeto de automação?
+              </option>
+              <option value="Quero melhorar meus testes automatizados">
+                Quero melhorar meus testes automatizados
+              </option>
+              <option value="Como aplicar boas práticas em automação?">
+                Como aplicar boas práticas em automação?
+              </option>
+              <option value="Dúvidas sobre integração com Jenkins/Maven">
+                Dúvidas sobre integração com Jenkins/Maven
+              </option>
+              <option value="Quero aprender testes para API com Rest Assured">
+                Quero aprender testes para API com Rest Assured
+              </option>
+              <option value="Preciso automatizar testes para mobile">
+                Preciso automatizar testes para mobile
+              </option>
+              <option value="Como preparar um framework para o time?">
+                Como preparar um framework para o time?
+              </option>
+              <option value="Estou iniciando com automação e preciso de um plano">
+                Estou iniciando com automação e preciso de um plano
               </option>
             </select>
           </div>
