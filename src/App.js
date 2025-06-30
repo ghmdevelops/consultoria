@@ -1,4 +1,3 @@
-import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Contato from "./Contato";
 import Missao from "./pages/Missao";
@@ -13,5 +12,4 @@ function App() {
     </Router>
   );
 }
-
 export default App;
