@@ -20,6 +20,7 @@ import {
 import {} from "react-icons/fa";
 import emailjs from "@emailjs/browser";
 import Swal from "sweetalert2";
+import { Link } from "react-router-dom";
 
 function Contato() {
   const [formData, setFormData] = useState({
@@ -318,11 +319,11 @@ function Contato() {
         </h2>
 
         <div className="row mb-4 align-items-center">
-          <div className="col-12 col-md-3 mb-4 d-flex justify-content-center justify-content-md-start">
+          <div className="col-12 col-md-3 mb-4 text-center">
             <img
               src="/logo980.jpeg"
               alt="Consultoria"
-              className="img-fluid rounded-circle shadow"
+              className="img-fluid rounded-circle shadow mb-3"
               style={{
                 border: "2px solid #a100ff",
                 width: "290px",
@@ -330,6 +331,18 @@ function Contato() {
                 objectFit: "cover",
               }}
             />
+            <a
+              href="/missao"
+              className="btn btn-outline-light"
+              style={{
+                borderColor: "#a100ff",
+                color: "#a100ff",
+                fontWeight: "600",
+                boxShadow: "0 0 10px #a100ff",
+              }}
+            >
+              🌟  Missão
+            </a>
           </div>
 
           <div className="col-md-7">
